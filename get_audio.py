@@ -2,7 +2,7 @@ import os
 import yt_dlp as youtube_dl
 from dotenv import load_dotenv
 
-def download_audio_from_youtube(youtube_url, output_path='.'):
+def download_audio_from_youtube(youtube_url, output_path):
     load_dotenv('.env')
 
     ydl_opts = {

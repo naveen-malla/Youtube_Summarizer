@@ -7,7 +7,7 @@ def main():
     youtube_url = 'https://youtu.be/hZqaoISyNpg'
     
     # Download audio from YouTube and get the file path
-    audio_file_path = download_audio_from_youtube(youtube_url, output_path='.')
+    audio_file_path = download_audio_from_youtube(youtube_url, output_path='./audio_files')
 
     # Transcribe the downloaded audio
     transcription = transcribe_audio_to_text(audio_file_path)
