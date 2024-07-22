@@ -43,3 +43,9 @@ docs/
 # Ignore audio files
 *.mp3
 *.wav
+
+# Ignore python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
