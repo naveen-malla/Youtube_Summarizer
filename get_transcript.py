@@ -6,7 +6,7 @@ import google.oauth2.credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from pytube import YouTube
-from typing import Union, BinaryIO
+
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -40,40 +40,48 @@ def get_video_metadata(url: str) -> dict:
     Returns:
         dict: The metadata of the video if available, otherwise None.
     """
-    video_id = url.split('v=')[-1].split('&')[0]
-    youtube = get_authenticated_service()
-    request = youtube.videos().list(
-        part="snippet",
-        id=video_id
-    )
-    response = request.execute()
-    metadata = response['items'][0]['snippet'] if 'items' in response and response['items'] else None
+    try:
+        video_id = url.split('v=')[-1].split('&')[0]
+        youtube = get_authenticated_service()
+        request = youtube.videos().list(
+            part="snippet",
+            id=video_id
+        )
+        response = request.execute()
+        metadata = response['items'][0]['snippet'] if 'items' in response and response['items'] else None
+        logger.debug(f"Fetched metadata: {metadata}")
+        return metadata
+    except Exception as e:
+        logger.error(f"Error fetching video metadata: {e}")
+        return None
 
-    return metadata
-
-def download_youtube_audio(url: str):
+def download_youtube_audio(url: str) -> BinaryIO:
     """
     Downloads the audio stream of a YouTube video to a temporary file and returns a file object.
 
     Args:
         url (str): The URL of the YouTube video from which the audio stream is to be downloaded.
+
+    Returns:
+        BinaryIO: The temporary file containing the downloaded audio stream.
     """
     temp_file = None  # Initialize the temp_file variable
-    
+
     try:
         yt = YouTube(url)
         audio_stream = yt.streams.filter(only_audio=True).first()
-        
+
         if audio_stream is None:
             raise Exception("No audio stream found")
-    
+
         # Create a temporary file
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-    
+
         # Download the audio stream and write to the temporary file
         audio_stream.stream_to_buffer(temp_file)
         temp_file.close()  # Close the file to finalize writing
         logger.debug(f"Audio file downloaded to {temp_file.name}")
+        
         # Reopen the temporary file in binary read mode
         return open(temp_file.name, 'rb')
     except Exception as e:
@@ -86,10 +94,18 @@ def download_youtube_audio(url: str):
         if temp_file and not temp_file.closed:
             os.unlink(temp_file.name)
 
-# Example usage
-try:
-    audio_file = download_youtube_audio("https://youtu.be/xrbyI-Cuze4")
-    # Do something with the audio_file
-    audio_file.close()  # Remember to close the file when done
-except Exception as e:
-    print(f"An error occurred: {e}")
+if __name__ == "__main__":
+    try:
+        # Test fetching metadata
+        url = "https://youtu.be/xrbyI-Cuze4"
+        metadata = get_video_metadata(url)
+        logger.info(f"Video metadata: {metadata}")
+        
+        # Test downloading audio
+        audio_file = download_youtube_audio(url)
+        logger.info("Downloaded audio file successfully.")
+        # Do something with the audio_file
+        audio_file.close()  # Remember to close the file when done
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")

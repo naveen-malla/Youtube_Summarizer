@@ -39,3 +39,7 @@ docs/
 # Ignore backup files
 *.bak
 *.swp
+
+# Ignore audio files
+*.mp3
+*.wav
