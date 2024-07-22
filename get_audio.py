@@ -19,8 +19,10 @@ def download_audio_from_youtube(youtube_url, output_path='.'):
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([youtube_url]) 
+        result = ydl.download([youtube_url])
+    
+    # Find the output file
+    info_dict = ydl.extract_info(youtube_url, download=False)
+    audio_file_path = f"{output_path}/{info_dict['title']}.mp3"
 
-if __name__ == '__main__':
-    youtube_url = 'https://youtu.be/LpdD1cHhGI8' 
-    download_audio_from_youtube(youtube_url)
+    return audio_file_path
