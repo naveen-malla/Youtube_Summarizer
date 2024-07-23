@@ -9,7 +9,7 @@ youtube_url = st.text_input("Enter YouTube URL:")
 if st.button("Transcribe"):
     if youtube_url:
         try:
-            audio_file_path = download_audio_from_youtube(youtube_url, output_path='.')
+            audio_file_path = download_audio_from_youtube(youtube_url, output_path='./audio_files')
 
             if os.path.exists(audio_file_path):
                 transcription = transcribe_audio_to_text(audio_file_path)
