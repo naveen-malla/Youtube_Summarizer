@@ -1,6 +1,5 @@
-torch
-openai-whisper
-yt_dlp
-python-dotenv
-ffmpeg
-streamlit
+yt-dlp==2024.7.16
+python-dotenv==1.0.1
+openai-whisper==20231117
+streamlit==1.36.0
+ffmpeg==1.4
