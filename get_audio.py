@@ -1,8 +1,16 @@
 import os
 import yt_dlp as youtube_dl
 from dotenv import load_dotenv
+import re
 
-def download_audio_from_youtube(youtube_url, output_path):
+def sanitize_filename(filename):
+    # Remove any invalid characters and replace with underscore
+    sanitized = re.sub(r'[^a-zA-Z0-9_\-]', '_', filename)
+    # Remove any double underscores or trailing underscores
+    sanitized = re.sub(r'_+', '_', sanitized).strip('_')
+    return sanitized
+
+def download_audio_from_youtube(youtube_url, output_path='.'):
     load_dotenv('.env')
 
     ydl_opts = {
@@ -14,15 +22,19 @@ def download_audio_from_youtube(youtube_url, output_path):
             'preferredcodec': 'mp3',  # Convert audio to mp3
             'preferredquality': '192',  # Use a bitrate of 192 kbps
         }],
-        'outtmpl': f'{output_path}/%(title)s.%(ext)s',
         'nocheckcertificate': True,  # Ignore SSL certificate errors
     }
 
+    # Extract video information without downloading
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        result = ydl.download([youtube_url])
-    
-    # Find the output file
-    info_dict = ydl.extract_info(youtube_url, download=False)
-    audio_file_path = f"{output_path}/{info_dict['title']}.mp3"
+        info_dict = ydl.extract_info(youtube_url, download=False)
+        title = info_dict.get('title', 'audio')
+        sanitized_title = sanitize_filename(title)
+        audio_file_path = os.path.join(output_path, f"{sanitized_title}")
+        ydl_opts['outtmpl'] = audio_file_path
 
-    return audio_file_path
+    # Download the audio using the sanitized file name
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([youtube_url])
+    
+    return audio_file_path + '.mp3'
