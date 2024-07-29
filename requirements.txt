@@ -3,3 +3,4 @@ python-dotenv==1.0.1
 openai-whisper==20231117
 streamlit==1.36.0
 ffmpeg==1.4
+langchain-community==0.2.10
