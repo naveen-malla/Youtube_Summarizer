@@ -12,8 +12,9 @@ def main():
     # Transcribe the downloaded audio
     transcription = transcribe_audio_to_text(audio_file_path)
     
-    # Print the transcription
-    print(transcription)
+    # Save the transcription to a text file
+    with open('llm_code/data/transcription.txt', 'w') as f:
+        f.write(transcription)
 
 if __name__ == '__main__':
     main()
