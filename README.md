@@ -14,6 +14,3 @@ Using Streamlit:
 streamlit run app.py
 
 
-Coming soon:
-
-Using LLM to summarize the transcription.
